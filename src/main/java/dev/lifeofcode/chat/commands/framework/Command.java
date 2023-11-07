@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface Command {
     String getName();
-    void execute(List<String> args, Source src);
+    void buildCommand();
+    void execute(String[] args, Source src);
 }

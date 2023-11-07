@@ -25,7 +25,5 @@ public class TcpChatApplication implements CommandLineRunner {
 		vertx.deployVerticle(chatServerVerticle).onFailure(failure -> {
 			log.error("Failed to deploy ChatServerVerticle verticle.", failure);
 		});
-
-		var bus = vertx.eventBus();
 	}
 }

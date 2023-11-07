@@ -2,11 +2,8 @@ package dev.lifeofcode.chat;
 
 import dev.lifeofcode.chat.commands.framework.CommandRouter;
 import dev.lifeofcode.chat.commands.framework.impl.ClientSource;
-import dev.lifeofcode.chat.exceptions.AuthenticationException;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.DecodeException;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.SocketAddress;
@@ -38,7 +35,6 @@ public class ChatServerVerticle extends AbstractVerticle {
     public void start(Promise<Void> startPromise) {
         var serverOpts = new NetServerOptions();
         serverOpts.setRegisterWriteHandler(true);
-        var bus = vertx.eventBus();
 
         vertx.createNetServer(serverOpts)
                 .connectHandler(this::connectionHandler)

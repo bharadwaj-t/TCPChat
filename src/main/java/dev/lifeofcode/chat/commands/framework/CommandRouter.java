@@ -15,7 +15,7 @@ import java.util.List;
 public class CommandRouter {
     private final List<Command> commands;
     private final CommandRegistry commandRegistry;
-    private static final String COMMAND_DELIMITER = ";";
+    private static final String COMMAND_DELIMITER = " ";
 
     public CommandRouter(List<Command> commands, CommandRegistry commandRegistry) {
         this.commands = commands;
@@ -29,6 +29,8 @@ public class CommandRouter {
         var command = commandWords.get(0);
         commandWords.remove(command);
 
+        log.info("buffer: {}", commandWords);
+
         try {
             var resolvedCommand = commandRegistry.query(command);
             if (resolvedCommand == null) {
@@ -37,7 +39,8 @@ public class CommandRouter {
             }
 
             log.info("Command found: {}", resolvedCommand.getName());
-            resolvedCommand.execute(commandWords, src);
+            var args = commandWords.toArray(new String[0]);
+            resolvedCommand.execute(args, src);
 
         } catch (CommandNotFoundException e) {
             src.write(e.getMessage());
