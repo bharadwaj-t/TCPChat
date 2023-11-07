@@ -1,5 +1,7 @@
 package dev.lifeofcode.chat;
 
+import dev.lifeofcode.chat.commands.framework.CommandRouter;
+import dev.lifeofcode.chat.commands.framework.impl.ClientSource;
 import dev.lifeofcode.chat.exceptions.AuthenticationException;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
@@ -9,10 +11,13 @@ import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.SocketAddress;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -20,6 +25,10 @@ import java.util.Map;
 public class ChatServerVerticle extends AbstractVerticle {
     private final int port;
     private final Map<SocketAddress, Client> chatClients = new HashMap<>();
+    private final List<Client> clientList = new ArrayList<>();
+
+    @Autowired
+    CommandRouter router;
 
     public ChatServerVerticle(@Value("${chat.server.port}") int port) {
         this.port = port;
@@ -47,12 +56,9 @@ public class ChatServerVerticle extends AbstractVerticle {
 
         chatClients.put(netSocket.remoteAddress(), new Client());
 
+        var clientSource = new ClientSource(netSocket);
         netSocket.handler(buffer -> {
-            var client = chatClients.get(netSocket.remoteAddress());
-            if(!client.isAuthenticated()) {
-                authenticate(netSocket, buffer, client);
-            }
-            command(netSocket, buffer, client);
+            router.route(buffer, clientSource);
         });
 
         netSocket.exceptionHandler(err -> {
@@ -62,32 +68,5 @@ public class ChatServerVerticle extends AbstractVerticle {
         netSocket.closeHandler(closed -> {
             log.info("Client disconnected: {}", netSocket.remoteAddress());
         });
-    }
-
-    private static void authenticate(NetSocket netSocket, Buffer buffer, Client client) {
-        try {
-            var authenticationJson = buffer.toJsonObject();
-            var name = authenticationJson.getString("client");
-            if (name == null) {
-                throw new AuthenticationException("\"client\" key is not present");
-            } else {
-                client.setAuthenticated(true);
-                client.setName(name);
-            }
-            netSocket.write(String.format("Welcome back, %s\n", client.getName()));
-        } catch (DecodeException e) {
-            netSocket.write("Authentication phase incomplete, identification payload must be Json.\n");
-        } catch (AuthenticationException e) {
-            log.error("Caught authentication exception: {}", e.getMessage());
-            netSocket.write(String.format("Authentication unsuccessful, %s\n", e.getMessage()));
-        }
-    }
-
-    public static void command(NetSocket netSocket, Buffer buffer, Client client) {
-        try {
-            var query = buffer.toJsonObject();
-        } catch (DecodeException e) {
-            netSocket.write("Commands to the server have to be in json format\n");
-        }
     }
 }
