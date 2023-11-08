@@ -2,7 +2,6 @@ package dev.lifeofcode.chat.commands.framework;
 
 import dev.lifeofcode.chat.exceptions.CommandNotFoundException;
 import io.vertx.core.buffer.Buffer;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +12,10 @@ import java.util.List;
 @Slf4j
 @Component
 public class CommandRouter {
-    private final List<Command> commands;
     private final CommandRegistry commandRegistry;
     private static final String COMMAND_DELIMITER = " ";
 
-    public CommandRouter(List<Command> commands, CommandRegistry commandRegistry) {
-        this.commands = commands;
+    public CommandRouter(List<Command> commands,CommandRegistry commandRegistry) {
         this.commandRegistry = commandRegistry;
     }
 
@@ -44,14 +41,6 @@ public class CommandRouter {
 
         } catch (CommandNotFoundException e) {
             src.write(e.getMessage());
-        }
-    }
-
-    @PostConstruct
-    public void regsiterCommands() {
-        for(Command cmd: commands) {
-            log.info("Registering command: {}", cmd.getName());
-            commandRegistry.register(cmd.getName(), cmd);
         }
     }
 }
