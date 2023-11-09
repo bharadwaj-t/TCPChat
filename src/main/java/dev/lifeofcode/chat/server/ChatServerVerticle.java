@@ -27,7 +27,6 @@ public class ChatServerVerticle extends AbstractVerticle {
 
                         // write command responses to client.
                         bus.<String>consumer("command-response", response -> {
-                            log.info("HAH: {}", response.body());
                             netSocket.write(response.body());
                         });
                     });
