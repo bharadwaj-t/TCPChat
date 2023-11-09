@@ -1,4 +1,4 @@
-package dev.lifeofcode.chat.commands.framework;
+package dev.lifeofcode.chat.commands;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
