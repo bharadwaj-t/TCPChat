@@ -2,7 +2,8 @@ package dev.lifeofcode.chat.commands;
 
 import dev.lifeofcode.chat.commands.framework.Command;
 import dev.lifeofcode.chat.commands.framework.CommandHelper;
-import dev.lifeofcode.chat.commands.framework.Source;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.streams.WriteStream;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ public class ListCommand implements Command {
     }
 
     @Override
-    public void execute(String[] args, Source src) {
+    public void execute(String[] args, WriteStream<Buffer> src) {
         try {
             CommandLineParser parser = new DefaultParser();
             CommandLine line = parser.parse(commandOptions, args);
@@ -38,18 +39,20 @@ public class ListCommand implements Command {
             boolean help = line.hasOption("help");
 
             if (help) {
-                src.write(CommandHelper.generateHelp("list", commandOptions));
+                src.write(Buffer.buffer(CommandHelper.generateHelp("list", commandOptions)));
                 return;
             } else if (!channel) {
-                src.write(CommandHelper.generateUsage("list", commandOptions));
+                src.write(Buffer.buffer(CommandHelper.generateUsage("list", commandOptions)));
                 return;
             }
 
-            src.write("{\"data\": \"value\"}\n");
+            var buffer = Buffer.buffer("HUH OKAY");
+
+            src.write(Buffer.buffer("{\"data\": \"value\"}\n"));
 
         } catch (ParseException exp) {
             log.error("Error parsing command: {}", exp.getMessage());
-            src.write("Failed to parse the command\n");
+            src.write(Buffer.buffer("Failed to parse the command\n"));
         }
     }
 }

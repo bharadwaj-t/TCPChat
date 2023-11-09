@@ -2,6 +2,7 @@ package dev.lifeofcode.chat.commands.framework;
 
 import dev.lifeofcode.chat.exceptions.CommandNotFoundException;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.streams.WriteStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ public class CommandRouter {
         this.commandRegistry = commandRegistry;
     }
 
-    public void route(Buffer buffer, Source src) {
+    public void route(Buffer buffer, WriteStream<Buffer> src) {
         // parse the command.
         var commandWords = new java.util.ArrayList<>(Arrays.stream(buffer.toString(StandardCharsets.UTF_8)
                 .split(COMMAND_DELIMITER)).map(String::trim).toList());
@@ -40,7 +41,7 @@ public class CommandRouter {
             resolvedCommand.execute(args, src);
 
         } catch (CommandNotFoundException e) {
-            src.write(e.getMessage());
+            src.write(Buffer.buffer(e.getMessage()));
         }
     }
 }
