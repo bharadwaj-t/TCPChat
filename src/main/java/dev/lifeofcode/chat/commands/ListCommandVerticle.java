@@ -7,8 +7,7 @@ import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ListCommandVerticle extends AbstractVerticle {
-    private static final String NAME = "list";
+public class ListCommandVerticle extends AbstractVerticle implements CommandPayloadParser {
     private static final Logger log = LoggerFactory.getLogger(ListCommandVerticle.class);
 
     @Override
@@ -17,8 +16,7 @@ public class ListCommandVerticle extends AbstractVerticle {
         var bus = vertx.eventBus();
 
         bus.<JsonObject>consumer("list-command", msg -> {
-            var jsonArgsArray = msg.body().getJsonArray("args");
-            var args = CommandHelper.getArgStringArray(jsonArgsArray);
+            String[] args = unmarshalCommandPayload(msg.body());
 
             try {
                 CommandLineParser parser = new DefaultParser();

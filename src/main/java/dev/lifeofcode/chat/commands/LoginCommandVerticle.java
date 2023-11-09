@@ -7,9 +7,8 @@ import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoginCommandVerticle extends AbstractVerticle {
+public class LoginCommandVerticle extends AbstractVerticle implements CommandPayloadParser {
     private static final Logger log = LoggerFactory.getLogger(LoginCommandVerticle.class);
-    private final String NAME = "login";
 
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
@@ -17,8 +16,7 @@ public class LoginCommandVerticle extends AbstractVerticle {
         var bus = vertx.eventBus();
 
         bus.<JsonObject>consumer("login-command", msg -> {
-            var jsonArgsArray = msg.body().getJsonArray("args");
-            var args = CommandHelper.getArgStringArray(jsonArgsArray);
+            String[] args = unmarshalCommandPayload(msg.body());
 
             try {
                 CommandLineParser parser = new DefaultParser();

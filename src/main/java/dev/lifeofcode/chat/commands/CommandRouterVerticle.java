@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class CommandRouterVerticle extends AbstractVerticle {
+public class CommandRouterVerticle extends AbstractVerticle implements CommandPayloadParser {
     private static final Map<String, String> commands = new HashMap<>();
     private static final String COMMAND_DELIMITER = " ";
 
@@ -32,8 +32,7 @@ public class CommandRouterVerticle extends AbstractVerticle {
             var command = commandWords.get(0);
             commandWords.remove(command);
 
-            var commandPayload = new JsonObject();
-            commandPayload.put("args", new JsonArray(commandWords));
+            var commandPayload = marshalCommandPayload(commandWords);
 
             var address = commands.get(command);
             if (address != null) {
