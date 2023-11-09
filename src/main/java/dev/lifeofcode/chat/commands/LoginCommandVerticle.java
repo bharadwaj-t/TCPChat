@@ -7,7 +7,7 @@ import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoginCommandVerticle extends AbstractVerticle implements CommandPayloadParser {
+public class LoginCommandVerticle extends AbstractVerticle implements CommandPayloadParser, CommandHelpGenerator {
     private static final Logger log = LoggerFactory.getLogger(LoginCommandVerticle.class);
 
     @Override
@@ -27,9 +27,9 @@ public class LoginCommandVerticle extends AbstractVerticle implements CommandPay
                 boolean help = line.hasOption("help");
 
                 if (help) {
-                    bus.send("command-response", CommandHelper.generateHelp("login", options));
+                    bus.send("command-response", generateHelp("login", options));
                 } else if (username == null || password == null) {
-                    bus.send("command-response", CommandHelper.generateUsage("login", options));
+                    bus.send("command-response", generateUsage("login", options));
                 }
             } catch (ParseException exp) {
                 log.error("Error parsing command: {}", exp.getMessage());
