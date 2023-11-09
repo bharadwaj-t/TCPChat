@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ChatServerVerticle extends AbstractVerticle {
-    private final static int PORT = 4322 ;
+    private final static int PORT = 4322;
 
     @Override
     public void start(Promise<Void> startPromise) {

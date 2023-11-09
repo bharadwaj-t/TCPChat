@@ -1,5 +1,6 @@
 package dev.lifeofcode.chat.commands;
 
+import io.vertx.core.json.JsonArray;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
@@ -34,5 +35,12 @@ public class CommandHelper {
         }
 
         return usageMessage.toString();
+    }
+
+    public static String[] getArgStringArray(JsonArray jsonArray) {
+        return jsonArray.stream()
+                .map(Object::toString)
+                .toList()
+                .toArray(new String[0]);
     }
 }

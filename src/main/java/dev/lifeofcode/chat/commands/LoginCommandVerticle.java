@@ -17,11 +17,8 @@ public class LoginCommandVerticle extends AbstractVerticle {
         var bus = vertx.eventBus();
 
         bus.<JsonObject>consumer("login-command", msg -> {
-            String[] args = msg.body().getJsonArray("args")
-                    .stream()
-                    .map(Object::toString)
-                    .toList()
-                    .toArray(new String[0]);
+            var jsonArgsArray = msg.body().getJsonArray("args");
+            var args = CommandHelper.getArgStringArray(jsonArgsArray);
 
             try {
                 CommandLineParser parser = new DefaultParser();
@@ -38,7 +35,7 @@ public class LoginCommandVerticle extends AbstractVerticle {
                 }
             } catch (ParseException exp) {
                 log.error("Error parsing command: {}", exp.getMessage());
-                bus.send("command-response","Failed to parse the command\n");
+                bus.send("command-response", "Failed to parse the command\n");
             }
         });
         startPromise.complete();

@@ -10,7 +10,10 @@ import io.vertx.core.json.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class CommandRouterVerticle extends AbstractVerticle {
@@ -36,7 +39,7 @@ public class CommandRouterVerticle extends AbstractVerticle {
             if (address != null) {
                 bus.send(address, commandPayload);
             } else {
-                bus.send("command-response", "command not found");
+                bus.send("command-response", "command not found\n");
             }
         });
     }

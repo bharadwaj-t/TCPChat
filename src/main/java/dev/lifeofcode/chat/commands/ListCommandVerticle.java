@@ -10,17 +10,15 @@ import org.slf4j.LoggerFactory;
 public class ListCommandVerticle extends AbstractVerticle {
     private static final String NAME = "list";
     private static final Logger log = LoggerFactory.getLogger(ListCommandVerticle.class);
+
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
         var options = buildOptions();
         var bus = vertx.eventBus();
 
         bus.<JsonObject>consumer("list-command", msg -> {
-            String[] args = msg.body().getJsonArray("args")
-                    .stream()
-                    .map(Object::toString)
-                    .toList()
-                    .toArray(new String[0]);
+            var jsonArgsArray = msg.body().getJsonArray("args");
+            var args = CommandHelper.getArgStringArray(jsonArgsArray);
 
             try {
                 CommandLineParser parser = new DefaultParser();
@@ -36,7 +34,7 @@ public class ListCommandVerticle extends AbstractVerticle {
                 }
             } catch (ParseException exp) {
                 log.error("Error parsing command: {}", exp.getMessage());
-                bus.send("command-response","Failed to parse the command\n");
+                bus.send("command-response", "Failed to parse the command\n");
             }
         });
         startPromise.complete();

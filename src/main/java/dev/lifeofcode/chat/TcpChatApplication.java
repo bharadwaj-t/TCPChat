@@ -1,9 +1,7 @@
 package dev.lifeofcode.chat;
 
-import dev.lifeofcode.chat.commands.ListCommandVerticle;
-import dev.lifeofcode.chat.server.ChatServerVerticle;
 import dev.lifeofcode.chat.commands.CommandRouterVerticle;
-import dev.lifeofcode.chat.commands.LoginCommandVerticle;
+import dev.lifeofcode.chat.server.ChatServerVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
