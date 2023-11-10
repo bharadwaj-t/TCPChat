@@ -11,10 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 public class TcpChatApplication extends AbstractVerticle {
     @Override
     public void start() throws Exception {
-        vertx.deployVerticle(ChatServerVerticle.class, new DeploymentOptions().setInstances(10)).onFailure(failure -> {
+        vertx.deployVerticle(ChatServerVerticle.class, new DeploymentOptions().setInstances(1)).onFailure(failure -> {
             log.error("Failed to deploy ChatServerVerticle verticle.", failure);
         });
-        vertx.deployVerticle(CommandRouterVerticle.class, new DeploymentOptions().setInstances(10)).onFailure(failure -> {
+        vertx.deployVerticle(CommandRouterVerticle.class, new DeploymentOptions().setInstances(1)).onFailure(failure -> {
             log.error("Failed to deploy COmmandRouterVerticle verticle.", failure);
         });
     }

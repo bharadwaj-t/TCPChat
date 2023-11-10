@@ -16,6 +16,7 @@ public class LoginCommandVerticle extends AbstractVerticle implements CommandPay
         var bus = vertx.eventBus();
 
         bus.<JsonObject>consumer("login-command", msg -> {
+            log.info("LOGIN: {}", msg.body());
             String[] args = unmarshalCommandPayload(msg.body());
 
             try {

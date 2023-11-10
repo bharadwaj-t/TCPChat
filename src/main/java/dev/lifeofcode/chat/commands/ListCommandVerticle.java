@@ -16,6 +16,7 @@ public class ListCommandVerticle extends AbstractVerticle implements CommandPayl
         var bus = vertx.eventBus();
 
         bus.<JsonObject>consumer("list-command", msg -> {
+            log.info("LIST: {}", msg.body());
             String[] args = unmarshalCommandPayload(msg.body());
 
             try {

@@ -34,21 +34,23 @@ public class CommandRouterVerticle extends AbstractVerticle implements CommandPa
 
             var address = commands.get(command);
             if (address != null) {
+                log.info("ROUTING: {}", command);
                 bus.send(address, commandPayload);
             } else {
-                bus.send("command-response", "command not found\n");
+                log.error("COULD NOT FIND COMMAND");
+                bus.send("command-error-response", "command not found\n");
             }
         });
     }
 
     private static void deployCommands(Vertx vertx) {
-        vertx.deployVerticle(LoginCommandVerticle.class, new DeploymentOptions().setInstances(10)).onFailure(failure -> {
+        vertx.deployVerticle(LoginCommandVerticle.class, new DeploymentOptions().setInstances(1)).onFailure(failure -> {
             log.error("Failed to deploy LoginCOmmandVerticle verticle.", failure);
         }).onSuccess(done -> {
             commands.put("login", "login-command");
             log.info("Launched LoginCommandVerticle.");
         });
-        vertx.deployVerticle(ListCommandVerticle.class, new DeploymentOptions().setInstances(10)).onFailure(failure -> {
+        vertx.deployVerticle(ListCommandVerticle.class, new DeploymentOptions().setInstances(1)).onFailure(failure -> {
             log.error("Failed to deploy ListCommandVerticle verticle.", failure);
         }).onSuccess(done -> {
             commands.put("list", "list-command");

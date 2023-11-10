@@ -20,8 +20,9 @@ public class ChatServerVerticle extends AbstractVerticle {
                     netSocket.write("Welcome to chat server\n");
                     log.info("Client connected: {}", netSocket.remoteAddress());
 
+                    netSocket.pause();
                     netSocket.handler(buffer -> {
-
+                        log.info("READ: {}", buffer);
                         // send all the incoming buffer.
                         bus.send("clientbuffer", buffer);
 
@@ -29,7 +30,11 @@ public class ChatServerVerticle extends AbstractVerticle {
                         bus.<String>consumer("command-response", response -> {
                             netSocket.write(response.body());
                         });
+                        bus.<String>consumer("command-error-response", response -> {
+                            netSocket.write(response.body());
+                        });
                     });
+                    netSocket.resume();
 
                     netSocket.exceptionHandler(err -> {
                         log.error("Exception occurred", err);
