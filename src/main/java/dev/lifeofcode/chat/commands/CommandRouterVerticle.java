@@ -5,8 +5,6 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
@@ -22,7 +20,7 @@ public class CommandRouterVerticle extends AbstractVerticle implements CommandPa
 
     @Override
     public void start(Promise<Void> startPromise) throws Exception {
-        deployComamnds(vertx);
+        deployCommands(vertx);
 
         var bus = vertx.eventBus();
         bus.<Buffer>consumer("clientbuffer", payload -> {
@@ -43,7 +41,7 @@ public class CommandRouterVerticle extends AbstractVerticle implements CommandPa
         });
     }
 
-    private static void deployComamnds(Vertx vertx) {
+    private static void deployCommands(Vertx vertx) {
         vertx.deployVerticle(LoginCommandVerticle.class, new DeploymentOptions().setInstances(10)).onFailure(failure -> {
             log.error("Failed to deploy LoginCOmmandVerticle verticle.", failure);
         }).onSuccess(done -> {
