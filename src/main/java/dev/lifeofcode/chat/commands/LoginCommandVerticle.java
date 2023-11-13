@@ -26,12 +26,29 @@ public class LoginCommandVerticle extends AbstractVerticle implements CommandPay
                 String username = line.hasOption("user") ? line.getOptionValue("user") : null;
                 String password = line.hasOption("pass") ? line.getOptionValue("pass") : null;
                 boolean help = line.hasOption("help");
+                boolean register = line.hasOption("register");
 
                 if (help) {
                     bus.send("command-response", generateHelp("login", options));
+                    return;
+                } else if (register && username != null && password != null) {
+                    log.info("Registering user....");
+                    bus.<String>request("user-signup", new JsonObject().put("username", username).put("password", password))
+                            .onSuccess(signupMsg -> {
+                                bus.send("command-response", signupMsg.body());
+                            })
+                            .onFailure(err -> log.error("Error in signup", err));
                 } else if (username == null || password == null) {
                     bus.send("command-response", generateUsage("login", options));
                 }
+
+                log.info("logging in...");
+                bus.<String>request("user-authentication", new JsonObject().put("username", username).put("password", password))
+                        .onSuccess(authMsg -> {
+                            bus.send("command-response", authMsg.body());
+                        })
+                        .onFailure(err -> log.error("Error in auth", err));
+
             } catch (ParseException exp) {
                 log.error("Error parsing command: {}", exp.getMessage());
                 bus.send("command-response", "Failed to parse the command\n");
@@ -53,11 +70,13 @@ public class LoginCommandVerticle extends AbstractVerticle implements CommandPay
                 .desc("password of the client")
                 .build();
         var helpOption = new Option("help", "prints help");
+        var registerOption = new Option("register", "register account");
 
         var options = new Options();
         options.addOption(usernameOption);
         options.addOption(passwordOption);
         options.addOption(helpOption);
+        options.addOption(registerOption);
         return options;
     }
 }

@@ -1,3 +1,7 @@
+### TCPChat ###
+dependency-reduced-pom.xml
+application.properties
+
 ### Vert.x ###
 .vertx/
 
